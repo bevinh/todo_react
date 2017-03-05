@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
-import {TodoForm, TodoList} from './components/todo/';
-import {addTodo, generateId, findById, toggleTodo, updateTodo, removeTodo} from './lib/todoHelpers';
+import {TodoForm, TodoList, Footer} from './components/todo/';
+import {addTodo, generateId, findById, toggleTodo, updateTodo, removeTodo, filterTodos} from './lib/todoHelpers';
 import {pipe, partial} from './lib/utils';
 
 class App extends Component {
@@ -14,6 +14,9 @@ class App extends Component {
     ],
     current_todo: ''
 }
+    static contextTypes = {
+        route: React.PropTypes.string
+    }
     handleRemove = (id, evt) => {
         evt.preventDefault()
         const updatedTodos = removeTodo(this.state.todos, id)
@@ -62,6 +65,7 @@ class App extends Component {
     }
   render() {
         const submitHandler = this.state.current_todo ? this.handleSubmit : this.handleEmptySubmit
+      const displayTodos = filterTodos(this.state.todos, this.context.route)
     return (
       <div className="App">
         <div className="App-header">
@@ -71,9 +75,11 @@ class App extends Component {
         <div className="Todo-App">
             {this.state.errorMessage && <span className="error">{this.state.errorMessage}</span>}
         <TodoForm handleInputChange={this.handleInputChange} current_todo={this.state.current_todo} handleSubmit={submitHandler}/>
-            <TodoList todos={this.state.todos} handleToggle={this.handleToggle} handleRemove={this.handleRemove} />
+            <TodoList todos={displayTodos} handleToggle={this.handleToggle} handleRemove={this.handleRemove} />
         </div>
+          <Footer />
       </div>
+
     );
   }
 }
